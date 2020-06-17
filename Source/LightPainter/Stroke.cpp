@@ -11,8 +11,11 @@ AStroke::AStroke()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 
-	InstancedStaticMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("InstancedStaticMeshComponents"));
-	InstancedStaticMeshComponent->SetupAttachment(Root);
+	CylinderInstancedStaticMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("CylinderInstancedStaticMeshComponent"));
+	CylinderInstancedStaticMeshComponent->SetupAttachment(Root);
+
+	SphereInstancedStaticMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("SphereInstancedStaticMeshComponent"));
+	SphereInstancedStaticMeshComponent->SetupAttachment(Root);
 
 	DefaultScale = FVector::OneVector;
 }
@@ -20,24 +23,29 @@ AStroke::AStroke()
 void AStroke::BeginPlay()
 {
 	PreviousCursorLocation = GetActorLocation();
-	if (!InstancedStaticMeshComponent->GetStaticMesh())
+	if (!CylinderInstancedStaticMeshComponent->GetStaticMesh())
 	{
-		InstancedStaticMeshComponent->SetStaticMesh(SplineMesh);
+		CylinderInstancedStaticMeshComponent->SetStaticMesh(SplineMesh);
 	}
-	if (!InstancedStaticMeshComponent->GetMaterial(0))
+	CylinderInstancedStaticMeshComponent->SetMaterial(0, SplineMaterial);
+	if (!SphereInstancedStaticMeshComponent->GetStaticMesh())
 	{
-		InstancedStaticMeshComponent->SetMaterial(0, SplineMaterial);
+		SphereInstancedStaticMeshComponent->SetStaticMesh(JointMesh);
 	}
+	SphereInstancedStaticMeshComponent->SetMaterial(0, SplineMaterial);
+
+	SphereInstancedStaticMeshComponent->AddInstance(GetNextJointTransform(PreviousCursorLocation));
 }
 
 void AStroke::Update(FVector CursorLocation)
 {
-	FTransform InstanceTransform;
+	FVector DirectionVector = CursorLocation - PreviousCursorLocation;
+	if (DirectionVector.Size() < 0.4) return;
 
-	InstanceTransform.SetLocation(GetSegmentPosition(CursorLocation));
-	InstanceTransform.SetScale3D(GetSegmentScale(CursorLocation));
-	InstanceTransform.SetRotation(GetSegmentRotation(CursorLocation).Quaternion());
-	InstancedStaticMeshComponent->AddInstance(InstanceTransform);
+	
+	CylinderInstancedStaticMeshComponent->AddInstance(GetNextSegmentTransform(CursorLocation));
+
+	SphereInstancedStaticMeshComponent->AddInstance(GetNextJointTransform(CursorLocation));
 
 	//// Create a spline mesh
 	//USplineMeshComponent* Spline = CreateSplineMesh();
@@ -47,6 +55,24 @@ void AStroke::Update(FVector CursorLocation)
 	//Spline->SetStartAndEnd(StartPosition, FVector::ZeroVector, EndPosition, FVector::ZeroVector);
 
 	PreviousCursorLocation = CursorLocation;
+}
+
+FTransform AStroke::GetNextSegmentTransform(FVector CursorLocation)
+{
+	FTransform CylinderInstanceTransform;
+	CylinderInstanceTransform.SetLocation(GetSegmentPosition(CursorLocation));
+	CylinderInstanceTransform.SetScale3D(GetSegmentScale(CursorLocation));
+	CylinderInstanceTransform.SetRotation(GetSegmentRotation(CursorLocation).Quaternion());
+	return CylinderInstanceTransform;
+}
+
+FTransform AStroke::GetNextJointTransform(FVector CursorLocation)
+{
+	FTransform SphereInstanceTransform;
+	SphereInstanceTransform.SetLocation(GetActorTransform().InverseTransformPosition(CursorLocation));
+	SphereInstanceTransform.SetScale3D(DefaultScale);
+	SphereInstanceTransform.SetRotation(GetSegmentRotation(CursorLocation).Quaternion());
+	return SphereInstanceTransform;
 }
 
 USplineMeshComponent* AStroke::CreateSplineMesh()
@@ -88,6 +114,13 @@ FRotator AStroke::GetSegmentRotation(FVector CursorLocation)
 	float roll = 0.0f;
 
 	return FRotator(pitch, yaw, roll);
+}
+
+FQuat AStroke::GetSegmentRotationQ(FVector CursorLocation)
+{
+	FVector DirectionVector = CursorLocation - PreviousCursorLocation;
+	DirectionVector.Normalize();
+	return FQuat::FindBetweenNormals(FVector::UpVector, DirectionVector);
 }
 
 FVector AStroke::GetSegmentPosition(FVector CursorLocation)

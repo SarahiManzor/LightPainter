@@ -32,6 +32,9 @@ private:
 	UStaticMesh* SplineMesh;
 
 	UPROPERTY(EditDefaultsOnly)
+	UStaticMesh* JointMesh;
+
+	UPROPERTY(EditDefaultsOnly)
 	UMaterialInterface* SplineMaterial;
 
 	// State
@@ -41,7 +44,10 @@ private:
 	FVector DefaultScale;
 
 	UPROPERTY(VisibleAnywhere)
-	UInstancedStaticMeshComponent* InstancedStaticMeshComponent;
+	UInstancedStaticMeshComponent* CylinderInstancedStaticMeshComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UInstancedStaticMeshComponent* SphereInstancedStaticMeshComponent;
 
 	// ----------Custom Functions----------
 public:
@@ -52,6 +58,10 @@ private:
 
 	FVector GetSegmentScale(FVector CursorLocation);
 	FRotator GetSegmentRotation(FVector CursorLocation);
+	FQuat GetSegmentRotationQ(FVector CursorLocation);
 	FVector GetSegmentPosition(FVector CursorLocation);
+
+	FTransform GetNextSegmentTransform(FVector CursorLocation);
+	FTransform GetNextJointTransform(FVector CursorLocation);
 
 };

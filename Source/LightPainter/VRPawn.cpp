@@ -3,6 +3,7 @@
 #include "Engine/World.h"
 #include "HandController.h"
 #include "Components/InputComponent.h" 
+#include "Saving/PainterSaveGame.h" 
 
 AVRPawn::AVRPawn()
 {
@@ -25,6 +26,8 @@ void AVRPawn::BeginPlay()
 		RightHandController->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
 		RightHandController->SetOwner(this);
 	}
+
+	UPainterSaveGame::Create()->Save();
 }
 
 void AVRPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
