@@ -3,11 +3,12 @@
 #include "Stroke.h"
 #include "Components/SplineMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h" 
+#include "Saving/PainterSaveGame.h"
+#include "Engine/World.h"
 
 // Sets default values
 AStroke::AStroke()
 {
-	PrimaryActorTick.bCanEverTick = true;
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 
@@ -23,6 +24,7 @@ AStroke::AStroke()
 void AStroke::BeginPlay()
 {
 	PreviousCursorLocation = GetActorLocation();
+
 	if (!CylinderInstancedStaticMeshComponent->GetStaticMesh())
 	{
 		CylinderInstancedStaticMeshComponent->SetStaticMesh(SplineMesh);
@@ -37,12 +39,33 @@ void AStroke::BeginPlay()
 	SphereInstancedStaticMeshComponent->AddInstance(GetNextJointTransform(PreviousCursorLocation));
 }
 
+FStrokeState AStroke::SerializeToStruct() const
+{
+	FStrokeState StrokeState;
+	StrokeState.Class = GetClass();
+	StrokeState.ControlPoints = ControlPoints;
+	StrokeState.Location = GetActorLocation();
+
+	return StrokeState;
+}
+
+AStroke* AStroke::SpawnAndDeserializeFromStruct(UWorld* World, const FStrokeState &StrokeState)
+{
+	AStroke* Stroke = World->SpawnActor<AStroke>(StrokeState.Class, StrokeState.Location, FRotator::ZeroRotator);
+	for (FVector ControlPoint : StrokeState.ControlPoints)
+	{
+		Stroke->Update(ControlPoint);
+	}
+
+	return Stroke;
+}
+
 void AStroke::Update(FVector CursorLocation)
 {
 	FVector DirectionVector = CursorLocation - PreviousCursorLocation;
 	if (DirectionVector.Size() < 0.4) return;
 
-	
+	ControlPoints.Add(CursorLocation);
 	CylinderInstancedStaticMeshComponent->AddInstance(GetNextSegmentTransform(CursorLocation));
 
 	SphereInstancedStaticMeshComponent->AddInstance(GetNextJointTransform(CursorLocation));

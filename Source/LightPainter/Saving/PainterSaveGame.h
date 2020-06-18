@@ -6,9 +6,25 @@
 #include "GameFramework/SaveGame.h"
 #include "PainterSaveGame.generated.h"
 
-/**
- * 
- */
+class AStroke;
+
+USTRUCT()
+struct FStrokeState
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TSubclassOf<AStroke> Class;
+
+	UPROPERTY()
+	TArray<FVector> ControlPoints;
+
+	UPROPERTY()
+	FVector Location;
+};
+
+class AStroke;
+
 UCLASS()
 class LIGHTPAINTER_API UPainterSaveGame : public USaveGame
 {
@@ -17,5 +33,16 @@ class LIGHTPAINTER_API UPainterSaveGame : public USaveGame
 public:
 	static UPainterSaveGame* Create();
 	bool Save();
-	
+	static UPainterSaveGame* Load();
+
+	void SerializeFromWorld(UWorld* World);
+	void DeserializeToWorld(UWorld* World);
+
+private:
+	void ClearWorld(UWorld* World);
+
+private:
+	// State
+	UPROPERTY()
+	TArray<FStrokeState> Strokes;
 };

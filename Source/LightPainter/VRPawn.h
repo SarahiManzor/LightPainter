@@ -47,4 +47,8 @@ protected:
 private:
 	void RightTriggerDown();
 	void RightTriggerUp();
+
+	void Save();
+	void Load();
+	void Clear();
 };

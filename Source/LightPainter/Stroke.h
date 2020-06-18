@@ -8,6 +8,8 @@
 
 class USplineMeshComponent;
 class UInstancedStaticMeshComponent;
+class UWorld;
+struct FStrokeState;
 
 UCLASS()
 class LIGHTPAINTER_API AStroke : public AActor
@@ -49,9 +51,13 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UInstancedStaticMeshComponent* SphereInstancedStaticMeshComponent;
 
+	TArray<FVector> ControlPoints;
+
 	// ----------Custom Functions----------
 public:
 	void Update(FVector CursorLocation);
+	FStrokeState SerializeToStruct() const;
+	static AStroke* SpawnAndDeserializeFromStruct(UWorld* World, const FStrokeState &StrokeState);
 protected:
 private:
 	USplineMeshComponent * CreateSplineMesh();
