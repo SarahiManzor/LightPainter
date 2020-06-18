@@ -29,45 +29,33 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;
 
-	// Config
-	UPROPERTY(EditDefaultsOnly)
-	UStaticMesh* SplineMesh;
-
-	UPROPERTY(EditDefaultsOnly)
-	UStaticMesh* JointMesh;
-
-	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* SplineMaterial;
-
-	// State
-	FVector PreviousCursorLocation;
-
-	UPROPERTY(EditAnywhere)
-	FVector DefaultScale;
-
 	UPROPERTY(VisibleAnywhere)
 	UInstancedStaticMeshComponent* CylinderInstancedStaticMeshComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UInstancedStaticMeshComponent* SphereInstancedStaticMeshComponent;
 
+	// State
+	FVector PreviousCursorLocation;
 	TArray<FVector> ControlPoints;
+
+	UPROPERTY(EditAnywhere)
+	FVector DefaultScale;
 
 	// ----------Custom Functions----------
 public:
 	void Update(FVector CursorLocation);
 	FStrokeState SerializeToStruct() const;
 	static AStroke* SpawnAndDeserializeFromStruct(UWorld* World, const FStrokeState &StrokeState);
+
 protected:
 private:
-	USplineMeshComponent * CreateSplineMesh();
+	FVector GetSegmentScale(FVector CursorLocation) const;
+	FRotator GetSegmentRotation(FVector CursorLocation) const;
+	FQuat GetSegmentRotationQ(FVector CursorLocation) const;
+	FVector GetSegmentPosition(FVector CursorLocation) const;
 
-	FVector GetSegmentScale(FVector CursorLocation);
-	FRotator GetSegmentRotation(FVector CursorLocation);
-	FQuat GetSegmentRotationQ(FVector CursorLocation);
-	FVector GetSegmentPosition(FVector CursorLocation);
-
-	FTransform GetNextSegmentTransform(FVector CursorLocation);
-	FTransform GetNextJointTransform(FVector CursorLocation);
+	FTransform GetNextSegmentTransform(FVector CursorLocation) const;
+	FTransform GetNextJointTransform(FVector CursorLocation) const;
 
 };

@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Stroke.h"
-#include "Components/SplineMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h" 
 #include "Saving/PainterSaveGame.h"
 #include "Engine/World.h"
@@ -23,19 +22,8 @@ AStroke::AStroke()
 
 void AStroke::BeginPlay()
 {
+	Super::BeginPlay();
 	PreviousCursorLocation = GetActorLocation();
-
-	if (!CylinderInstancedStaticMeshComponent->GetStaticMesh())
-	{
-		CylinderInstancedStaticMeshComponent->SetStaticMesh(SplineMesh);
-	}
-	CylinderInstancedStaticMeshComponent->SetMaterial(0, SplineMaterial);
-	if (!SphereInstancedStaticMeshComponent->GetStaticMesh())
-	{
-		SphereInstancedStaticMeshComponent->SetStaticMesh(JointMesh);
-	}
-	SphereInstancedStaticMeshComponent->SetMaterial(0, SplineMaterial);
-
 	SphereInstancedStaticMeshComponent->AddInstance(GetNextJointTransform(PreviousCursorLocation));
 }
 
@@ -70,17 +58,10 @@ void AStroke::Update(FVector CursorLocation)
 
 	SphereInstancedStaticMeshComponent->AddInstance(GetNextJointTransform(CursorLocation));
 
-	//// Create a spline mesh
-	//USplineMeshComponent* Spline = CreateSplineMesh();
-	//// Update end points
-	//FVector StartPosition = GetActorTransform().InverseTransformPosition(CursorLocation);
-	//FVector EndPosition = GetActorTransform().InverseTransformPosition(PreviousCursorLocation);
-	//Spline->SetStartAndEnd(StartPosition, FVector::ZeroVector, EndPosition, FVector::ZeroVector);
-
 	PreviousCursorLocation = CursorLocation;
 }
 
-FTransform AStroke::GetNextSegmentTransform(FVector CursorLocation)
+FTransform AStroke::GetNextSegmentTransform(FVector CursorLocation) const
 {
 	FTransform CylinderInstanceTransform;
 	CylinderInstanceTransform.SetLocation(GetSegmentPosition(CursorLocation));
@@ -89,7 +70,7 @@ FTransform AStroke::GetNextSegmentTransform(FVector CursorLocation)
 	return CylinderInstanceTransform;
 }
 
-FTransform AStroke::GetNextJointTransform(FVector CursorLocation)
+FTransform AStroke::GetNextJointTransform(FVector CursorLocation) const
 {
 	FTransform SphereInstanceTransform;
 	SphereInstanceTransform.SetLocation(GetActorTransform().InverseTransformPosition(CursorLocation));
@@ -98,25 +79,13 @@ FTransform AStroke::GetNextJointTransform(FVector CursorLocation)
 	return SphereInstanceTransform;
 }
 
-USplineMeshComponent* AStroke::CreateSplineMesh()
-{
-	USplineMeshComponent* NewSpline = NewObject<USplineMeshComponent>(this);
-	NewSpline->SetMobility(EComponentMobility::Movable);
-	NewSpline->AttachToComponent(Root, FAttachmentTransformRules::SnapToTargetIncludingScale);
-	NewSpline->SetStaticMesh(SplineMesh);
-	NewSpline->SetMaterial(0, SplineMaterial);
-	NewSpline->RegisterComponent();
-
-	return NewSpline;
-}
-
-FVector AStroke::GetSegmentScale(FVector CursorLocation)
+FVector AStroke::GetSegmentScale(FVector CursorLocation) const
 {
 	FVector DirectionVector = CursorLocation - PreviousCursorLocation;
 	return FVector(DefaultScale.X, DefaultScale.Y, DirectionVector.Size() / 100.0f);
 }
 
-FRotator AStroke::GetSegmentRotation(FVector CursorLocation)
+FRotator AStroke::GetSegmentRotation(FVector CursorLocation) const
 {
 	FVector DirectionVector = CursorLocation - PreviousCursorLocation;
 	DirectionVector.Normalize();
@@ -139,14 +108,14 @@ FRotator AStroke::GetSegmentRotation(FVector CursorLocation)
 	return FRotator(pitch, yaw, roll);
 }
 
-FQuat AStroke::GetSegmentRotationQ(FVector CursorLocation)
+FQuat AStroke::GetSegmentRotationQ(FVector CursorLocation) const
 {
 	FVector DirectionVector = CursorLocation - PreviousCursorLocation;
 	DirectionVector.Normalize();
 	return FQuat::FindBetweenNormals(FVector::UpVector, DirectionVector);
 }
 
-FVector AStroke::GetSegmentPosition(FVector CursorLocation)
+FVector AStroke::GetSegmentPosition(FVector CursorLocation) const
 {
 	FVector LastLocalPosition = GetActorTransform().InverseTransformPosition((PreviousCursorLocation + CursorLocation) / 2.0);
 	return LastLocalPosition;
