@@ -4,47 +4,39 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "HandController.generated.h"
+#include "HandControllerBase.generated.h"
 
 class UMotionControllerComponent;
-class AStroke;
 
 UCLASS()
-class LIGHTPAINTER_API AHandController : public AActor
+class LIGHTPAINTER_API AHandControllerBase : public AActor
 {
 	GENERATED_BODY()
 
 
 // ----------Base Functions----------
-public:	
-	AHandController();
+public:
+	AHandControllerBase();
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
-// ----------Variables----------
+	// ----------Variables----------
 public:
 protected:
 private:
-	// Config
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<AStroke> Stroke;
-
 	// Components
 	UPROPERTY(VisibleAnywhere)
 	UMotionControllerComponent* MotionController;
 
-	// State
-	UPROPERTY()
-	AStroke* CurrentStroke;
-
-// ----------Custom Functions----------
+	// ----------Custom Functions----------
 public:
-	void TriggerDown();
-	void TriggerUp();
+	virtual void TriggerDown();
+	virtual void TriggerUp();
 protected:
 private:
+
 };

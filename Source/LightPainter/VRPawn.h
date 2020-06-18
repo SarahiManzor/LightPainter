@@ -7,7 +7,7 @@
 #include "VRPawn.generated.h"
 
 class UCameraComponent;
-class AHandController;
+class AHandControllerBase;
 
 UCLASS()
 class LIGHTPAINTER_API AVRPawn : public APawn
@@ -28,7 +28,7 @@ protected:
 private:
 	// Config
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AHandController> HandControllerClass;
+	TSubclassOf<AHandControllerBase> HandControllerBaseClass;
 
 	// Components
 	UPROPERTY(VisibleAnywhere)
@@ -39,7 +39,7 @@ private:
 
 	// References
 	UPROPERTY()
-	AHandController* RightHandController;
+	AHandControllerBase* RightHandControllerBase;
 
 // ----------Custom Functions----------
 public:

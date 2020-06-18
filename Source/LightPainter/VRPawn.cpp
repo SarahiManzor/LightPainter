@@ -1,7 +1,7 @@
 #include "VRPawn.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/World.h"
-#include "HandController.h"
+#include "HandControllerBase.h"
 #include "Components/InputComponent.h" 
 #include "Saving/PainterSaveGame.h" 
 #include "Kismet/GameplayStatics.h" 
@@ -22,11 +22,11 @@ void AVRPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HandControllerClass)
+	if (HandControllerBaseClass)
 	{
-		RightHandController = GetWorld()->SpawnActor<AHandController>(HandControllerClass);
-		RightHandController->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
-		RightHandController->SetOwner(this);
+		RightHandControllerBase = GetWorld()->SpawnActor<AHandControllerBase>(HandControllerBaseClass);
+		RightHandControllerBase->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
+		RightHandControllerBase->SetOwner(this);
 	}
 }
 
@@ -42,17 +42,17 @@ void AVRPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompon
 
 void AVRPawn::RightTriggerDown()
 {
-	if (RightHandController)
+	if (RightHandControllerBase)
 	{
-		RightHandController->TriggerDown();
+		RightHandControllerBase->TriggerDown();
 	}
 }
 
 void AVRPawn::RightTriggerUp()
 {
-	if (RightHandController)
+	if (RightHandControllerBase)
 	{
-		RightHandController->TriggerUp();
+		RightHandControllerBase->TriggerUp();
 	}
 }
 
