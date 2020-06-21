@@ -41,6 +41,9 @@ private:
 	UPROPERTY()
 	AHandControllerBase* RightHandControllerBase;
 
+	// State
+	FString CurrentSlotName;
+
 // ----------Custom Functions----------
 public:
 protected:

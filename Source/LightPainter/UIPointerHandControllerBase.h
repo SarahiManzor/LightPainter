@@ -6,9 +6,8 @@
 #include "HandControllerBase.h"
 #include "UIPointerHandControllerBase.generated.h"
 
-/**
- * 
- */
+class UWidgetInteractionComponent;
+
 UCLASS()
 class LIGHTPAINTER_API AUIPointerHandControllerBase : public AHandControllerBase
 {
@@ -29,6 +28,7 @@ public:
 public:
 protected:
 private:
+	UWidgetInteractionComponent* WidgetInteractionComponent;
 
 	// ----------Custom Functions----------
 public:

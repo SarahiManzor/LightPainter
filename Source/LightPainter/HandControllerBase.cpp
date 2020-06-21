@@ -1,4 +1,4 @@
-#include "PaintBrushHandController.h"
+#include "HandControllerBase.h"
 #include "MotionControllerComponent.h"
 #include "Engine/World.h"
 #include "Stroke.h"

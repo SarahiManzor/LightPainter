@@ -28,6 +28,12 @@ void AVRPawn::BeginPlay()
 		RightHandControllerBase->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
 		RightHandControllerBase->SetOwner(this);
 	}
+
+	UPainterSaveGame* Painting = UPainterSaveGame::Create();
+	if (Painting)
+	{
+		CurrentSlotName = Painting->GetSlotName();
+	}
 }
 
 void AVRPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -59,15 +65,18 @@ void AVRPawn::RightTriggerUp()
 void AVRPawn::Save()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Save"));
-	UPainterSaveGame* Painting = UPainterSaveGame::Create();
-	Painting->SerializeFromWorld(GetWorld());
-	Painting->Save();
+	UPainterSaveGame* Painting = UPainterSaveGame::Load(CurrentSlotName);
+	if (Painting)
+	{
+		Painting->SerializeFromWorld(GetWorld());
+		Painting->Save();
+	}
 }
 
 void AVRPawn::Load()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Load"));
-	UPainterSaveGame* Painting = UPainterSaveGame::Load();
+	UPainterSaveGame* Painting = UPainterSaveGame::Load(CurrentSlotName);
 	if (Painting)
 	{
 		Painting->DeserializeToWorld(GetWorld());
