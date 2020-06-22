@@ -25,5 +25,4 @@ void UPaintingGridCard::SlotButtonClicked()
 {
 	UStereoLayerFunctionLibrary::ShowSplashScreen();
 	UGameplayStatics::OpenLevel(GetWorld(), TEXT("Canvas"), true, "SlotName=" + PaintingName);
-	UStereoLayerFunctionLibrary::HideSplashScreen();
 }

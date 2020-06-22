@@ -6,6 +6,7 @@
 #include "Saving/PainterSaveGame.h" 
 #include "Kismet/GameplayStatics.h" 
 #include "Stroke.h" 
+#include "PaintingGameMode.h" 
 
 AVRPawn::AVRPawn()
 {
@@ -27,12 +28,6 @@ void AVRPawn::BeginPlay()
 		RightHandControllerBase = GetWorld()->SpawnActor<AHandControllerBase>(HandControllerBaseClass);
 		RightHandControllerBase->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
 		RightHandControllerBase->SetOwner(this);
-	}
-
-	UPainterSaveGame* Painting = UPainterSaveGame::Create();
-	if (Painting)
-	{
-		CurrentSlotName = Painting->GetSlotName();
 	}
 }
 
@@ -65,21 +60,20 @@ void AVRPawn::RightTriggerUp()
 void AVRPawn::Save()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Save"));
-	UPainterSaveGame* Painting = UPainterSaveGame::Load(CurrentSlotName);
-	if (Painting)
+	APaintingGameMode* GameMode = Cast<APaintingGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
 	{
-		Painting->SerializeFromWorld(GetWorld());
-		Painting->Save();
+		GameMode->Save();
 	}
 }
 
 void AVRPawn::Load()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Load"));
-	UPainterSaveGame* Painting = UPainterSaveGame::Load(CurrentSlotName);
-	if (Painting)
+	APaintingGameMode* GameMode = Cast<APaintingGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
 	{
-		Painting->DeserializeToWorld(GetWorld());
+		GameMode->Load();
 	}
 }
 
