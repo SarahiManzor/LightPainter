@@ -1,7 +1,9 @@
 #include "PaintingPicker.h" 
 #include "Components/WidgetComponent.h"
 #include "PaintingGrid.h"
+#include "ActionBar.h"
 #include "../../Saving/PainterSaveGameIndex.h"
+#include "../../Saving/PainterSaveGame.h"
 
 // Sets default values
 APaintingPicker::APaintingPicker()
@@ -21,6 +23,39 @@ void APaintingPicker::BeginPlay()
 {
 	Super::BeginPlay();
 
+	RefreshSlots();
+	
+	UActionBar* ActionBarWidget = Cast<UActionBar>(ActionBar->GetUserWidgetObject());
+	if (ActionBarWidget)
+	{
+		ActionBarWidget->SetParentPicker(this);
+	}
+}
+
+void APaintingPicker::AddPainting()
+{
+	UPainterSaveGame* SaveGame = UPainterSaveGame::Create();
+
+	RefreshSlots();
+}
+
+void APaintingPicker::EnableDeleteMode()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Delete mode enabled."));
+	ClearSlots();
+}
+
+void APaintingPicker::ClearSlots()
+{
+	UPaintingGrid* Grid = Cast<UPaintingGrid>(PaintingGrid->GetUserWidgetObject());
+	if (Grid)
+	{
+		Grid->ClearPaintings();
+	}
+}
+
+void APaintingPicker::RefreshSlots()
+{
 	UPaintingGrid* Grid = Cast<UPaintingGrid>(PaintingGrid->GetUserWidgetObject());
 	if (Grid)
 	{

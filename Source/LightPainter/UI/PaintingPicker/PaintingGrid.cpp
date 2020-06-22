@@ -19,3 +19,15 @@ void UPaintingGrid::AddPainting(int32 GridIndex, FString SlotName)
 		}
 	}
 }
+
+void UPaintingGrid::ClearPaintings()
+{
+	if (PaintingGrid)
+	{
+		for (int32 i = 0; i < PaintingGrid->GetChildrenCount(); i++)
+		{
+			USizeBox* SizeBox = Cast<USizeBox>(PaintingGrid->GetChildAt(i));
+			SizeBox->ClearChildren();
+		}
+	}
+}

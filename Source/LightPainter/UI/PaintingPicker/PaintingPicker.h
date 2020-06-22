@@ -34,6 +34,11 @@ private:
 
 // ----------Custom Functions----------
 public:
+	void AddPainting();
+	void EnableDeleteMode();
+
 protected:
 private:
+	void ClearSlots();
+	void RefreshSlots();
 };
