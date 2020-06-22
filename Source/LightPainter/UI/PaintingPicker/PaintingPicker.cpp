@@ -27,7 +27,7 @@ void APaintingPicker::BeginPlay()
 		TArray<FString> Names = UPainterSaveGameIndex::Load()->GetSlotNames();
 		for (int32 i = 0; i < Names.Num(); i++)
 		{
-			Grid->AddPainting(i);
+			Grid->AddPainting(i, Names[i]);
 		}
 	}
 }

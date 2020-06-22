@@ -8,6 +8,7 @@
 
 class UUniformGridPanel;
 class UUserWidget;
+class UPaintingGridCard;
 
 UCLASS()
 class LIGHTPAINTER_API UPaintingGrid : public UUserWidget
@@ -16,7 +17,7 @@ class LIGHTPAINTER_API UPaintingGrid : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void AddPainting(int32 GridIndex);
+	void AddPainting(int32 GridIndex, FString SlotName);
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, meta = (BindWidget))
@@ -24,5 +25,5 @@ protected:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> GridCardClass;
+	TSubclassOf<UPaintingGridCard> GridCardClass;
 };
