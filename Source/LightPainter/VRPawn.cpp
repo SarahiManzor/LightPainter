@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h" 
 #include "Stroke.h" 
 #include "PaintingGameMode.h" 
+#include "UI/PaintingPicker/PaintingPicker.h" 
 
 AVRPawn::AVRPawn()
 {
@@ -23,11 +24,20 @@ void AVRPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HandControllerBaseClass)
+	if (RightHandController)
 	{
-		RightHandControllerBase = GetWorld()->SpawnActor<AHandControllerBase>(HandControllerBaseClass);
+		RightHandControllerBase = GetWorld()->SpawnActor<AHandControllerBase>(RightHandController);
 		RightHandControllerBase->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
 		RightHandControllerBase->SetOwner(this);
+		RightHandControllerBase->SetTrackingSource(EControllerHand::Right);
+	}
+
+	if (LeftHandController)
+	{
+		LeftHandControllerBase = GetWorld()->SpawnActor<AHandControllerBase>(LeftHandController);
+		LeftHandControllerBase->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
+		LeftHandControllerBase->SetOwner(this);
+		LeftHandControllerBase->SetTrackingSource(EControllerHand::Left);
 	}
 }
 
@@ -36,9 +46,8 @@ void AVRPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAction(FName("RightTrigger"), IE_Pressed, this, &AVRPawn::RightTriggerDown);
 	PlayerInputComponent->BindAction(FName("RightTrigger"), IE_Released, this, &AVRPawn::RightTriggerUp);
-	PlayerInputComponent->BindAction(FName("Save"), IE_Released, this, &AVRPawn::Save);
-	PlayerInputComponent->BindAction(FName("Load"), IE_Released, this, &AVRPawn::Load);
 	PlayerInputComponent->BindAction(FName("Clear"), IE_Released, this, &AVRPawn::Clear);
+	PlayerInputComponent->BindAxis(FName("RightControllerThumbstickRight"), this, &AVRPawn::PaginateRightAxisInput);
 }
 
 void AVRPawn::RightTriggerDown()
@@ -57,23 +66,28 @@ void AVRPawn::RightTriggerUp()
 	}
 }
 
-void AVRPawn::Save()
+void AVRPawn::PaginateRightAxisInput(float Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Save"));
-	APaintingGameMode* GameMode = Cast<APaintingGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode)
+	int32 Input = Value > 0.5 ? 1 : Value < -0.5 ? -1 : 0;
+	if (Input != 0 && Input != LastInput)
 	{
-		GameMode->Save();
+		UE_LOG(LogTemp, Warning, TEXT("Input: %i"), Input);
+		UpdateCurrentPage(Input);
 	}
+	LastInput = Input;
 }
 
-void AVRPawn::Load()
+void AVRPawn::UpdateCurrentPage(float Offset)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Load"));
-	APaintingGameMode* GameMode = Cast<APaintingGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode)
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APaintingPicker::StaticClass(), FoundActors);
+	for (AActor* Actor : FoundActors)
 	{
-		GameMode->Load();
+		APaintingPicker* Picker = Cast<APaintingPicker>(Actor);
+		if (Picker)
+		{
+			Picker->UpdateCurrentPage(Offset);
+		}
 	}
 }
 

@@ -26,19 +26,30 @@ public:
 public:
 protected:
 private:
+	// Components
 	UPROPERTY(VisibleAnywhere)
 	UWidgetComponent* PaintingGrid;
 
 	UPROPERTY(VisibleAnywhere)
 	UWidgetComponent* ActionBar;
 
+	// State
+	UPROPERTY(EditAnywhere)
+	int32 CurrentPage = 0;
+
+	int32 TotalPages = 0;
+
 // ----------Custom Functions----------
 public:
 	void AddPainting();
 	void EnableDeleteMode();
+	void UpdateCurrentPage(int32 Offset);
 
 protected:
 private:
 	void ClearSlots();
+	void ClearDots();
+	void Refresh();
 	void RefreshSlots();
+	void RefreshDots();
 };

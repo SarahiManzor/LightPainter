@@ -6,6 +6,13 @@
 #include "Saving/PainterSaveGame.h"
 #include "Kismet/StereoLayerFunctionLibrary.h"
 
+void APaintingGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	Load();
+	UStereoLayerFunctionLibrary::HideSplashScreen();
+}
+
 void APaintingGameMode::InitGame(const FString &MapName, const FString &Options, FString &ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
@@ -30,9 +37,6 @@ void APaintingGameMode::Save()
 		Painting->SerializeFromWorld(GetWorld());
 		Painting->Save();
 	}
-
-	UStereoLayerFunctionLibrary::ShowSplashScreen();
-	UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"), true);
 }
 
 void APaintingGameMode::Load()
@@ -44,10 +48,10 @@ void APaintingGameMode::Load()
 	}
 }
 
-void APaintingGameMode::BeginPlay()
+void APaintingGameMode::SaveAndQuit()
 {
-	Super::BeginPlay();
-	Load();
-	UStereoLayerFunctionLibrary::HideSplashScreen();
+	Save();
+	UStereoLayerFunctionLibrary::ShowSplashScreen();
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"), true);
 }
 

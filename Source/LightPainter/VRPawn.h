@@ -28,7 +28,10 @@ protected:
 private:
 	// Config
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AHandControllerBase> HandControllerBaseClass;
+	TSubclassOf<AHandControllerBase> RightHandController;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AHandControllerBase> LeftHandController;
 
 	// Components
 	UPROPERTY(VisibleAnywhere)
@@ -41,14 +44,20 @@ private:
 	UPROPERTY()
 	AHandControllerBase* RightHandControllerBase;
 
+	UPROPERTY()
+	AHandControllerBase* LeftHandControllerBase;
+
+	// State
+	int32 LastInput = 0;
+
 // ----------Custom Functions----------
 public:
 protected:
 private:
 	void RightTriggerDown();
 	void RightTriggerUp();
+	void PaginateRightAxisInput(float Value);
+	void UpdateCurrentPage(float Offset);
 
-	void Save();
-	void Load();
 	void Clear();
 };

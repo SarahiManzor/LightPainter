@@ -9,7 +9,6 @@ AHandControllerBase::AHandControllerBase()
 
 	MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionController"));
 	SetRootComponent(MotionController);
-	MotionController->SetTrackingSource(EControllerHand::Right);
 	MotionController->SetShowDeviceModel(true);
 }
 
@@ -31,5 +30,10 @@ void AHandControllerBase::TriggerDown()
 void AHandControllerBase::TriggerUp()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Trigger up"));
+}
+
+void AHandControllerBase::SetTrackingSource(EControllerHand Hand)
+{
+	MotionController->SetTrackingSource(Hand);
 }
 

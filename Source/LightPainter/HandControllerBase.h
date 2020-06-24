@@ -36,6 +36,7 @@ private:
 public:
 	virtual void TriggerDown();
 	virtual void TriggerUp();
+	void SetTrackingSource(EControllerHand Hand);
 protected:
 private:
 
